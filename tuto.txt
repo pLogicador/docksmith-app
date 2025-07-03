@@ -1,0 +1,2 @@
+# run streamlit server 
+streamlit run docksmith/app.py
