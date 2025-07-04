@@ -1,7 +1,7 @@
 import os
 from langchain_community.document_loaders import DirectoryLoader, TextLoader
-from langchain_community.embedding import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISES
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_groq import ChatGroq
 from langchain.chains import RetrievalQA
@@ -39,7 +39,7 @@ class RAGService:
             return False
         
         texts = self.text_splitter.split_documents(documents)
-        self.vector_store = FAISES.from_documents(texts, self.embeddings)
+        self.vector_store = FAISS.from_documents(texts, self.embeddings)
 
         template = """
             Você é o Docksmith 🛠️, um assistente treinado para responder apenas com base na documentação abaixo.
