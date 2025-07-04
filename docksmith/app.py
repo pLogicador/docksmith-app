@@ -1,5 +1,10 @@
-import streamlit as st
 import os
+import streamlit as st
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
 
 st.set_page_config(page_title="Docksmith", page_icon="📃", layout="wide")
 st.title("📃 Docksmith - Knowledge Extraction, the Smart Way")
