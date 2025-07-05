@@ -1,15 +1,19 @@
 import os
 from firecrawl import FirecrawlApp
+#import streamlit as st
+
 
 
 class ScrapingService:
     def __init__(self):
         self.api_key = os.getenv("FIRECRAWL_API_KEY")
         self.api_url = os.getenv("FIRECRAWL_API_URL")
+        print(f"ScrapingService init - api_url: {self.api_url}, api_key: {self.api_key}")
         self.app = FirecrawlApp(api_key=self.api_key, api_url=self.api_url)
 
     def scrape_website(self, url, collection_name):
         try:
+            #st.write("📌 1. Chamando map_url…")
             map_result = self.app.map_url(url)
 
             if hasattr(map_result, 'links'):
@@ -19,12 +23,17 @@ class ScrapingService:
             else:
                 # If you can't access, try as a dict (fallback)
                 links = getattr(map_result, 'links', [])
+
+            #st.write(f"📌 2. Total de links = {len(links)}")
+
             if not links:
                 raise Exception("No links were found!")
 
             print(f"Found {len(links)} links")
 
+            #st.write("📌 3. Chamando batch_scrape_urls…")
             scrape_result = self.app.batch_scrape_urls(links)
+            #st.write("📌 4. batch_scrape_urls respondeu!")  
 
             if hasattr(scrape_result, 'data'):
                 scraped_data = scrape_result.data
