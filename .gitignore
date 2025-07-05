@@ -1,3 +1,7 @@
+# Ignores all files and subfolders inside data/collections
+data/collections/*
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
