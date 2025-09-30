@@ -48,7 +48,15 @@ class RAGService:
 
                 📘 Estilo da Resposta:
                 - Responda em **português claro e técnico**, com foco em ensinar de forma didática.
-                - Quando apropriado, use listas, exemplos em código ou passo a passo.
+                - Quando apropriado, use:
+                    - **Listas numeradas** ou com marcadores para organizar informações.
+                    - **Trechos de código formatados em Markdown** para exemplos técnicos.
+                    - **Explicações detalhadas** quando o conteúdo permitir.
+                    - **Passo a passo** se a pergunta envolver procedimentos.
+
+                📌 Objetivo:
+                - Ser preciso, confiável e útil como um verdadeiro engenheiro de software lendo a documentação.
+                - Se possível, **contextualize** a informação com base nos arquivos/documentos fornecidos.
 
                 📥 Documentação:
                 {context}
