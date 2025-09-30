@@ -3,21 +3,25 @@ import streamlit as st
 from service.scraping import ScrapingService
 
 def show():
-    st.header("📥 Web Scraping")
+    st.header("📥 Extrair da web")
 
-    scraper = ScrapingService()
+    api_key = os.getenv("FIRECRAWL_API_KEY")
+    api_url = os.getenv("FIRECRAWL_API_URL")
+
+    scraper = ScrapingService(api_key, api_url)
 
     with st.form('scraping_form'):
-        url = st.text_input("Site URL:", placeholder="https://example.com")
-        collection_name = st.text_input("Collection name:", placeholder="my-collection")
-        submitted = st.form_submit_button("Start Scraping")
+        url = st.text_input("Endereço do site para extrair informações:", placeholder="https://example.com")
+        collection_name = st.text_input("Nome da coleção de informações (apenas na memória):", placeholder="minha-colecao")
+        submitted = st.form_submit_button("Iniciar extração")
 
         if submitted and url and collection_name:
-            # For the user to understand that there is an operations in background and that it must wait
-            with st.spinner("Extracting content..."):
-                result = scraper.scrape_website(url, collection_name)
+            with st.spinner("Extraindo conteúdo..."):
+                result = scraper.scrape_website(url)
                 if result["success"]:
-                    st.success(f"✅ Done! {result['files']} saved files.")
+                    if "collections" not in st.session_state:
+                        st.session_state.collections = {}
+                    st.session_state.collections[collection_name] = result["data"]
+                    st.success(f"✅ Concluído! {len(result['data'])} documentos armazenados na memória da sessão.")
                 else:
                     st.error(f"❌ Error: {result['error']}")
-

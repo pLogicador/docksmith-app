@@ -1,2 +1,3 @@
 # run streamlit server 
+poetry run streamlit run docksmith/app.py
 streamlit run docksmith/app.py
