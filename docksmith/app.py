@@ -48,7 +48,7 @@ def validate_token_with_api(token: str):
 token = get_token_from_query()
 if API_BASE:  # só valida se tiver configurado API_BASE
     if not token:
-        st.warning("Você precisa de um token para acessar o Docksmith.")
+        st.warning("Você precisa logar no www.syncron.pro.")
         st.stop()
     user_info = validate_token_with_api(token)
     if not user_info:
