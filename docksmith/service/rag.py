@@ -6,6 +6,10 @@ from langchain_groq import ChatGroq
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain.docstore.document import Document
+from sentence_transformers import SentenceTransformer
+
+# Força baixar para cache local
+model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="cpu")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -14,7 +18,10 @@ logging.basicConfig(
 
 class RAGService:
     def __init__(self):
-        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        self.embeddings = HuggingFaceEmbeddings(
+            model_name="all-MiniLM-L6-v2",
+            model_kwargs={"device": "cpu"}  # força usar CPU
+        )
         self.llm = ChatGroq(
             groq_api_key=None,  # será setado depois
             model_name="llama-3.3-70b-versatile"

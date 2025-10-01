@@ -33,7 +33,7 @@ def validate_token_with_api(token: str):
         return None
     try:
         resp = requests.post(
-            f"{API_BASE}/validate-docksmith-token",
+            f"{API_BASE}/validate-agendador-token",
             json={"token": token},
             timeout=5
         )
@@ -60,7 +60,7 @@ if API_BASE:  # só valida se tiver configurado API_BASE
 # ==================== TÍTULO ====================
 st.title("📃 Docksmith")
 st.markdown(
-    "<h4 style='color:gray; font-weight: normal; margin-top: -10px;'>Extração de Conhecimento, do Jeito Inteligente</h4>",
+    "<h4 style='color:gray; font-weight: normal; margin-top: -10px;'>Extração de Conhecimento, do Jeito Inteligente </h4>",
     unsafe_allow_html=True
 )
 

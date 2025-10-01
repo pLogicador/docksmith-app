@@ -11,7 +11,7 @@ st.title("📃 Docksmith")
 
 # Subtítulo discreto
 st.markdown(
-    "<h4 style='color:gray; font-weight: normal; margin-top: -10px;'>Extração de Conhecimento, do Jeito Inteligente</h4>",
+    "<h4 style='color:gray; font-weight: normal; margin-top: -10px;'>Transforme documentos em conhecimento prático</h4>",
     unsafe_allow_html=True
 )
 
