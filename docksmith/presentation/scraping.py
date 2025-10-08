@@ -8,7 +8,17 @@ def show():
     api_key = os.getenv("FIRECRAWL_API_KEY")
     api_url = os.getenv("FIRECRAWL_API_URL")
 
-    scraper = ScrapingService(api_key, api_url)
+    #scraper = ScrapingService(api_key, api_url)
+    scraper = ScrapingService(max_depth=2)
+
+    st.warning(
+    """
+    ⚠️ Observações importantes:
+    - O conteúdo extraído fica **apenas na memória da sessão**.
+    - Sites grandes podem demorar para extrair.
+    - Após reiniciar o servidor ou atualizar a página, a coleção será perdida.
+    """
+)
 
     with st.form('scraping_form'):
         url = st.text_input("Endereço do site para extrair informações:", placeholder="https://example.com")

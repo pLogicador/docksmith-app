@@ -34,7 +34,8 @@ def show():
         st.session_state.rag_service = RAGService()
 
     if "current_collection" not in st.session_state or st.session_state.current_collection != collection_name:
-        with st.spinner("Carregando documentos na memória..."):
+        st.info("⚠️ Carregando documentos na memória. Isso pode levar alguns segundos/minutos, dependendo do tamanho da coleção.")
+        with st.spinner("Carregando documentos..."):
             groq_key = os.getenv("GROQ_API_KEY")
             docs = st.session_state.collections[collection_name]
             success = st.session_state.rag_service.load_collection(docs, groq_key)

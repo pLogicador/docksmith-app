@@ -1,4 +1,5 @@
 import os
+import base64
 import requests
 import streamlit as st
 from dotenv import load_dotenv
@@ -58,11 +59,24 @@ if API_BASE:  # só valida se tiver configurado API_BASE
     st.sidebar.success(f"Usuário: {user_email}")
 
 # ==================== TÍTULO ====================
-st.title("📃 Docksmith")
+#st.title("📃 Docksmith")
+image_path = "assets/images/logo.png"
+with open(image_path, "rb") as f:
+    data = f.read()
+encoded = base64.b64encode(data).decode()
+
 st.markdown(
-    "<h4 style='color:gray; font-weight: normal; margin-top: -10px;'>Extração de Conhecimento, do Jeito Inteligente </h4>",
+    f"""
+    <div style="text-align:center;">
+        <img src="data:image/png;base64,{encoded}" width="200"/>
+        <p style="color:gray; font-size:18px; margin-top:-5px;">
+            Extração de Conhecimento, do Jeito Inteligente
+        </p>
+    </div>
+    """,
     unsafe_allow_html=True
 )
+
 
 # ==================== SIDEBAR ====================
 with st.sidebar:
