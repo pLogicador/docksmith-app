@@ -9,7 +9,7 @@ def show():
     api_url = os.getenv("FIRECRAWL_API_URL")
 
     #scraper = ScrapingService(api_key, api_url)
-    scraper = ScrapingService(max_depth=2)
+    scraper = ScrapingService(max_depth=1, concurrency=5)
 
     st.warning(
     """

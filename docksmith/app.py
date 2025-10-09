@@ -47,16 +47,31 @@ def validate_token_with_api(token: str):
 
 # ==================== VERIFICAÇÃO DE TOKEN ====================
 token = get_token_from_query()
+
+# salva o token na sessão se for válido
+if token:
+    st.session_state["token"] = token
+elif "token" in st.session_state:
+    token = st.session_state["token"]
+
 if API_BASE:  # só valida se tiver configurado API_BASE
     if not token:
         st.warning("Você precisa logar no www.syncron.pro.")
         st.stop()
-    user_info = validate_token_with_api(token)
+
+    # 🔹 Salva user_info na sessão para evitar revalidação repetida
+    if "user_info" not in st.session_state:
+        st.session_state.user_info = validate_token_with_api(token)
+
+    user_info = st.session_state.user_info
+
     if not user_info:
         st.error("⚠️ Token inválido ou expirado. Faça login novamente.")
         st.stop()
+
+    # 🔹 Mensagem de boas-vindas personalizada
     user_email = user_info.get("user", {}).get("email", "Usuário")
-    st.sidebar.success(f"Usuário: {user_email}")
+    st.sidebar.success(f"Bem-vindo, {user_email}")
 
 # ==================== TÍTULO ====================
 #st.title("📃 Docksmith")

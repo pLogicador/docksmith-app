@@ -1,9 +1,10 @@
-import logging
-import traceback
-import requests
+import asyncio
+import aiohttp
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 from markdownify import markdownify as md
+import logging
+import traceback
 
 logging.basicConfig(
     level=logging.INFO,
@@ -11,67 +12,103 @@ logging.basicConfig(
 )
 
 class ScrapingService:
-    def __init__(self, max_depth=2):
+    def __init__(self, max_depth=2, concurrency=10):
         """
-        max_depth: profundidade máxima da recursão para evitar crawling infinito
+        max_depth: profundidade máxima da recursão
+        concurrency: número máximo de conexões simultâneas
         """
         self.max_depth = max_depth
-        self.cache = {}  # cache só na memória
+        self.semaphore = asyncio.Semaphore(concurrency)
+        self.cache = {}  # cache em memória (HTML cru)
 
-    def _crawl(self, url, visited=None, depth=0):
-        if visited is None:
-            visited = set()
+    async def _fetch(self, session, url):
+        """Faz o fetch assíncrono e armazena no cache"""
+        if url in self.cache:
+            logging.info(f"♻️ Loaded from cache: {url}")
+            return self.cache[url]
 
+        try:
+            async with self.semaphore:
+                async with session.get(url, timeout=10) as resp:
+                    resp.raise_for_status()
+                    html = await resp.text()
+                    self.cache[url] = html  # armazenamos o HTML cru
+                    return html
+        except Exception as e:
+            logging.warning(f"❌ Failed to fetch {url}: {e}")
+            return None
+
+    async def _crawl(self, session, url, visited, depth=0):
         if url in visited or depth > self.max_depth:
             return []
 
         visited.add(url)
-
-        if url in self.cache:
-            logging.info(f"♻️  Loaded from cache: {url}")
-            return [self.cache[url]]
-
-        try:
-            resp = requests.get(url, timeout=10)
-            resp.raise_for_status()
-            soup = BeautifulSoup(resp.text, "html.parser")
-            content = md(soup.prettify())  # converte HTML para Markdown
-        except Exception as e:
-            logging.warning(f"❌ Failed to fetch {url}: {e}")
+        html = await self._fetch(session, url)
+        if not html:
             return []
 
-        # salva no cache em memória
-        self.cache[url] = content
+        soup = BeautifulSoup(html, "html.parser")
 
-        # extrai links internos do mesmo domínio, ignorando javascript:, mailto: e #
-        links = [
-            urljoin(url, a.get("href"))
-            for a in soup.find_all("a", href=True)
-            if urlparse(a.get("href")).netloc in ("", urlparse(url).netloc)
-            and not a.get("href").startswith(("javascript:", "mailto:", "#"))
-        ]
+        base_netloc = urlparse(url).netloc
+        links = []
 
-        all_content = [content]
-        for link in links:
-            all_content.extend(self._crawl(link, visited, depth + 1))
+        for a in soup.find_all("a", href=True):
+            href = a.get("href")
+            if not href:
+                continue
+
+            # 🔒 ignora tipos de links inválidos ou pseudo-links
+            if href.startswith(("javascript:", "mailto:", "#", ":", "?")):
+                continue
+
+            # 🔒 ignora fragmentos ou parâmetros internos
+            if "#" in href or "?" in href:
+                continue
+
+            full_url = urljoin(url, href)
+            parsed = urlparse(full_url)
+
+            # 🔒 só aceita links do mesmo domínio
+            if parsed.netloc != base_netloc:
+                continue
+
+            links.append(full_url)
+
+        if links:
+            logging.info(f"🔗 Found {len(links)} valid links at depth {depth}: {url}")
+        else:
+            logging.debug(f"⚪ No valid links found on: {url}")
+
+        # faz crawling paralelo para os links internos
+        tasks = [self._crawl(session, link, visited, depth + 1) for link in links]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        # converte o HTML atual para Markdown
+        markdown_content = md(html)
+        all_content = [markdown_content]
+
+        for r in results:
+            if isinstance(r, list):
+                all_content.extend(r)
 
         return all_content
 
-    def scrape_website(self, url):
-        """Retorna conteúdo em Markdown em memória (não salva no disco)."""
+    async def scrape_website_async(self, url):
+        """Crawling assíncrono completo e rápido"""
         try:
-            logging.info(f"🕵️  Starting recursive crawl on URL: {url}")
-            all_content = self._crawl(url)
-
-            if not all_content:
-                raise Exception("No pages found during crawling.")
-
-            unique_content = list(set(all_content))
-            logging.info(f"✅ Scraping completed: {len(unique_content)} pages found")
-
-            return {"success": True, "data": unique_content}
-
+            async with aiohttp.ClientSession() as session:
+                logging.info(f"🕵️ Starting async crawl on {url}")
+                content = await self._crawl(session, url, set())
+                if not content:
+                    raise Exception("No content found.")
+                unique = list(set(content))
+                logging.info(f"✅ Done: {len(unique)} pages scraped")
+                return {"success": True, "data": unique}
         except Exception as e:
-            logging.error(f"❌ Error in scraping: {e}")
+            logging.error(f"❌ Scraping error: {e}")
             logging.debug(traceback.format_exc())
             return {"success": False, "error": str(e)}
+
+    def scrape_website(self, url):
+        """Interface síncrona compatível com Streamlit"""
+        return asyncio.run(self.scrape_website_async(url))
