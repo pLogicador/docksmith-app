@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/*
+ * Identidade visual do Docksmith
+ * -------------------------------
+ * Conceito: "portão + camadas" — conteúdo bruto entra por um portão/dock
+ * e sai como camadas ordenadas de conhecimento (a última camada, a mais
+ * "temperada", ganha o destaque de cor). Paleta fria (aço/teal), deliberadamente
+ * distinta da paleta quente (ember/laranja) usada em outros produtos da casa.
+ */
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+
+  --color-temper: var(--temper);
+  --color-temper-strong: var(--temper-strong);
+  --color-temper-foreground: #f3fbfd;
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+}
+
+:root {
+  --bg: #0a0d11;
+  --surface: #12171d;
+  --surface-2: #1a2029;
+  --border: #262e39;
+  --text-primary: #edf1f5;
+  --text-secondary: #9aa5b1;
+  --text-tertiary: #6b7684;
+
+  --temper: #37a6c4;
+  --temper-strong: #63c7e0;
+
+  --success: #34c98a;
+  --warning: #e0a83a;
+  --danger: #ef5b5b;
+  --info: #5b8cff;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f6f8fa;
+    --surface: #ffffff;
+    --surface-2: #eef1f4;
+    --border: #dde2e8;
+    --text-primary: #12161c;
+    --text-secondary: #4d5762;
+    --text-tertiary: #838d99;
+
+    --temper: #1c7a97;
+    --temper-strong: #155f75;
+
+    --success: #178a5a;
+    --warning: #a6650f;
+    --danger: #c23a3a;
+    --info: #2f5fd6;
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #f6f8fa;
+  --surface: #ffffff;
+  --surface-2: #eef1f4;
+  --border: #dde2e8;
+  --text-primary: #12161c;
+  --text-secondary: #4d5762;
+  --text-tertiary: #838d99;
+
+  --temper: #1c7a97;
+  --temper-strong: #155f75;
+
+  --success: #178a5a;
+  --warning: #a6650f;
+  --danger: #c23a3a;
+  --info: #2f5fd6;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0a0d11;
+  --surface: #12171d;
+  --surface-2: #1a2029;
+  --border: #262e39;
+  --text-primary: #edf1f5;
+  --text-secondary: #9aa5b1;
+  --text-tertiary: #6b7684;
+
+  --temper: #37a6c4;
+  --temper-strong: #63c7e0;
+
+  --success: #34c98a;
+  --warning: #e0a83a;
+  --danger: #ef5b5b;
+  --info: #5b8cff;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+* {
+  border-color: var(--border);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--temper) 35%, transparent);
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+/* Microinterações com propósito: entrada de mensagens e painéis. */
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-msg-in {
+  animation: msg-in 220ms ease-out;
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes panel-in-right {
+  from { opacity: 0.4; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes panel-in-left {
+  from { opacity: 0.4; transform: translateX(-16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes panel-in-bottom {
+  from { opacity: 0.4; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

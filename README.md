@@ -1,125 +1,89 @@
-# 📚 Docksmith - Knowledge Extraction, the Smart Way
+# 📚 Docksmith — Knowledge Extraction, the Smart Way
 
 Docksmith é um assistente técnico para extração e consulta de conhecimento, combinando Web Scraping e RAG (Retrieval-Augmented Generation) em uma interface interativa.
 
-Ele permite que você colecione informações de sites técnicos e faça perguntas inteligentes com base nesses conteúdos, em um ambiente simples e confiável.
+Ele permite colecionar informações de sites técnicos e fazer perguntas inteligentes com base nesse conteúdo, com escolha do provedor/modelo de IA e análise em múltiplos níveis de profundidade (resumo, insights, evidências, dados e detalhamento técnico).
 
 ---
 
-## 🧩 Principais Funcionalidades
-
-- ✅ Web Scraping automático de sites técnicos
-- ✅ Armazenamento em sessão do navegador (sem necessidade de arquivos locais)
-- ✅ Busca inteligente baseada em IA (RAG)
-- ✅ Chat interativo em Streamlit
-- ✅ Logs estruturados para depuração
-
----
-
-## 📁 Estrutura do Projeto
+## 📁 Estrutura do projeto
 
 ```
 docksmith-app/
-├── docksmith/
-│   ├── app.py             # Ponto de entrada (Streamlit)
-│   ├── presentation/      # Camada de apresentação (UI)
-│   │   ├── chat.py        # Página de chat
-│   │   └── scraping.py    # Página de scraping
-│   └── service/           # Serviços internos
-│       ├── rag.py         # Serviço de IA (RAG + Groq)
-│       └── scraping.py    # Serviço de scraping (Firecrawl)
-├── pyproject.toml         # Dependências (Poetry)
-└── README.md
+├── docksmith/   # App Streamlit — produção atual, mantido como fallback
+├── api/         # API fina em FastAPI — reaproveita docksmith/service/* para o frontend novo
+├── frontend/    # Frontend novo (Vite + React + TypeScript) — vai para a Vercel
+└── docs/        # Documentação completa do projeto (comece por docs/README.md)
 ```
 
-## 🔑 Nota importante:
+| Parte | O que é |
+|---|---|
+| `docksmith/` | Interface original em Streamlit, em produção (Streamlit Cloud). Contém a lógica de scraping e RAG. |
+| `api/` | Camada HTTP fina que reaproveita a mesma lógica de `docksmith/service/` para servir o frontend novo — sem duplicar código, sem banco de dados. |
+| `frontend/` | Interface nova, desacoplada do Streamlit, com identidade visual própria, responsiva, e pensada para a Vercel. |
 
-> Todos os dados são armazenados na sessão do navegador (em memória), garantindo portabilidade e sem necessidade de persistência local.
-
----
-
-## ⚙️ Requisitos
-
-- Python 3.12+
-- [Poetry](https://python-poetry.org/) para dependências
-- Docker para rodar o Firecrawl
+Nenhuma das três partes usa banco de dados — todo estado vive em memória, pelo tempo da sessão.
 
 ---
 
-## 📦 Instalação e Setup
+## 🚀 Como executar localmente
+
+Resumo rápido — passo a passo completo em [`docs/02-executar-localmente.md`](docs/02-executar-localmente.md):
 
 ```bash
-# Clonar o projeto
-git clone https://github.com/seu-usuario/docksmith-app.git
-cd docksmith-app
-
-# Instalar dependências
+# Python (Streamlit + API — mesmo ambiente Poetry)
 poetry install
+poetry run streamlit run docksmith/app.py          # produção atual, porta 8501
+poetry run uvicorn api.main:app --reload --port 8787  # API nova
 
-# Ativar ambiente virtual
-poetry shell
+# Frontend
+cd frontend
+npm install
+npm run dev                                          # porta 5173 (ou próxima livre)
 ```
+
+Cada parte precisa do seu `.env` (raiz para Streamlit/API, `frontend/.env` para o frontend) — ver [`docs/02-executar-localmente.md`](docs/02-executar-localmente.md).
 
 ---
 
-## 🚀 Executando a aplicação
+## 📖 Documentação
 
-```bash
-streamlit run docksmith/app.py
-```
+Toda a documentação detalhada está em [`docs/`](docs/README.md):
 
-Acesse: [http://localhost:8501](http://localhost:8501)
-
----
-
-## 🌐 Firecrawl (Scraping Service)
-
-O Docksmith usa o Firecrawl como serviço de scraping. Para rodar localmente:
-
-```bash
-docker compose up
-```
-
-A API do Firecrawl ficará disponível em `http://localhost:3002`.
+1. [Visão geral](docs/01-visao-geral.md) — arquitetura, papel de cada parte, fluxo de autenticação e de dados.
+2. [Executar localmente](docs/02-executar-localmente.md) — passo a passo completo.
+3. [Frontend](docs/03-frontend.md) — instalação, build, estrutura, variáveis de ambiente.
+4. [API / Backend](docs/04-api-backend.md) — endpoints, autenticação, provedores de IA, RAG, FAISS, limitações.
+5. [Streamlit legado](docs/05-streamlit-legado.md) — por que continua existindo e como usá-lo.
+6. [Arquitetura](docs/06-arquitetura.md) — diagrama e fluxo de ponta a ponta.
+7. [Troubleshooting](docs/07-troubleshooting.md) — problemas comuns (incluindo os que apareceram de verdade durante o desenvolvimento) e soluções.
+8. [Desenvolvimento seguro](docs/08-desenvolvimento-seguro.md) — regras que protegem a produção atual.
+9. [Deploy](docs/09-deploy.md) — como o deploy deverá ser feito (documentação — nenhum deploy foi executado ainda).
 
 ---
 
-## 🧪 Variáveis de Ambiente (.env)
+## 🔑 Nota importante
 
-```env
-FIRECRAWL_API_KEY=devkey
-FIRECRAWL_API_URL=http://localhost:3002
-GROQ_API_KEY=sua_chave_groq_aqui
-```
+> Todos os dados são armazenados em memória (processo da API / sessão do navegador), garantindo portabilidade e sem necessidade de persistência local ou banco de dados.
 
 ---
 
 ## 🤖 Modelos de IA
 
-O Docksmith utiliza modelos da Groq API:
-
-```python
-self.llm = ChatGroq(
-    groq_api_key=os.getenv("GROQ_API_KEY"),
-    model_name="llama-3.1-8b-instant"
-)
-```
-
-Modelos recomendados:
-
-- `llama-3.1-8b-instant`
-- `gemma2-9b-it`
-- `llama-3.3-70b-versatile`
+O Docksmith suporta múltiplos provedores — Groq (padrão, usa a chave do servidor), OpenAI, Anthropic e Google Gemini (exigem a chave própria do usuário, nunca persistida). Detalhes em [`docs/04-api-backend.md`](docs/04-api-backend.md).
 
 ---
 
-## 🛠️ Logs e Debugs
+## 📊 Status atual
 
-O projeto gera logs estratégicos para acompanhar o fluxo e facilitar a depuração de erros.
+- **Streamlit**: em produção, inalterado (exceto uma extensão retrocompatível para suportar múltiplos provedores de IA).
+- **API**: implementada e testada localmente (scraping, chat e autenticação reais). Ainda não implantada.
+- **Frontend**: implementado, com identidade visual própria e testado em desktop/mobile. Ainda não implantado.
+- **Hub / `subscription_access_api`**: nenhuma alteração de código — a integração é uma troca de variável de ambiente (`URL_DOCKSMITH_APP`) no momento do cutover.
+
+---
 
 ### 🖊️ Autor
-
----
 
 Criado por Pedro Miranda (**pLogicador**) ✨
 Desenvolvedor Back-end, apaixonado por Clean Code, arquitetura modular e RAG aplicado a soluções reais.
