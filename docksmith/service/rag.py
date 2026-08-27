@@ -18,8 +18,17 @@ logging.basicConfig(
 
 # Modelo padrão por provedor. "groq" é o comportamento histórico do Docksmith;
 # os demais só são exercitados quando o chamador (api/) informa provider/api_key.
+#
+# Achado real, ao vivo em produção (2026-08-27): "llama-3.3-70b-versatile"
+# passou a exigir tier Enterprise na Groq (confirmado na doc oficial,
+# console.groq.com/docs/models) — toda pergunta ao RAG estava falhando com
+# 404 "model does not exist or you do not have access to it", mesmo com a
+# GROQ_API_KEY do servidor correta. "llama-3.1-8b-instant" e "gemma2-9b-it"
+# (usados como alternativas em api/providers.py) sofrem do mesmo problema —
+# o segundo nem aparece mais no catálogo da Groq. Substituídos pelos únicos
+# modelos confirmados disponíveis no tier padrão hoje: a família GPT-OSS.
 DEFAULT_MODELS = {
-    "groq": "llama-3.3-70b-versatile",
+    "groq": "openai/gpt-oss-120b",
     "openai": "gpt-4o-mini",
     "anthropic": "claude-sonnet-5",
     "google": "gemini-2.0-flash",

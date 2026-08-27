@@ -69,7 +69,7 @@ Provedores suportados e modelo padrão (`DEFAULT_MODELS` em `rag.py`):
 
 | Provedor | Requer chave própria | Modelo padrão |
 |---|---|---|
-| `groq` | Não (usa `GROQ_API_KEY` do servidor se o usuário não informar a própria) | `llama-3.3-70b-versatile` |
+| `groq` | Não (usa `GROQ_API_KEY` do servidor se o usuário não informar a própria) | `openai/gpt-oss-120b` (achado real 2026-08-27: `llama-3.3-70b-versatile` passou a exigir tier Enterprise na Groq — ver comentário em `rag.py`) |
 | `openai` | Sim | `gpt-4o-mini` |
 | `anthropic` | Sim | `claude-sonnet-5` |
 | `google` | Sim | `gemini-2.0-flash` |

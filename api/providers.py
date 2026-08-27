@@ -19,7 +19,12 @@ PROVIDER_CATALOG = [
         "id": "groq",
         "label": "Groq",
         "requiresApiKey": False,
-        "models": ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "gemma2-9b-it"],
+        # Achado real (2026-08-27, ver comentário em service/rag.py):
+        # llama-3.3-70b-versatile/llama-3.1-8b-instant/gemma2-9b-it não são
+        # mais acessíveis no tier padrão da Groq (Enterprise-only ou
+        # removidos do catálogo) — substituídos pela família GPT-OSS,
+        # confirmada disponível hoje.
+        "models": ["openai/gpt-oss-120b", "openai/gpt-oss-20b"],
         "defaultModel": DEFAULT_MODELS["groq"],
         "speedHint": "Rápida",
         "description": "Usa a chave padrão do Docksmith — nenhuma configuração necessária.",
@@ -87,7 +92,7 @@ RECOMMENDATIONS = [
         "id": "custo-beneficio",
         "label": "Custo-benefício",
         "provider": "groq",
-        "model": "llama-3.3-70b-versatile",
+        "model": "openai/gpt-oss-120b",
         "recommendedDepth": "equilibrada",
         "requiresApiKey": False,
         "bestFor": "Uso do dia a dia sem custo extra e sem configurar nada.",
@@ -99,7 +104,7 @@ RECOMMENDATIONS = [
         "id": "rapida",
         "label": "Rápida",
         "provider": "groq",
-        "model": "llama-3.1-8b-instant",
+        "model": "openai/gpt-oss-20b",
         "recommendedDepth": "rapida",
         "requiresApiKey": False,
         "bestFor": "Perguntas diretas e objetivas, iteração rápida.",
