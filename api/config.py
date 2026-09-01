@@ -40,6 +40,18 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 # TTL de sessão em memória (sem banco de dados / sem persistência).
 SESSION_TTL_SECONDS = int(os.getenv("DOCKSMITH_SESSION_TTL_SECONDS", "3600"))
 
+# Achado real, ao vivo em produção (2026-09-01): a limpeza de sessões
+# vencidas (sessions._cleanup_expired_locked) só rodava de forma reativa —
+# disparada dentro de create_session()/get_session(), nunca sozinha. Em
+# tráfego de rajadas (uso concentrado seguido de período ocioso), a RAM
+# ficava "presa" no último pico até QUALQUER usuário novo aparecer e
+# reativar a limpeza — dando a impressão de vazamento contínuo mesmo com o
+# TTL funcionando corretamente. Este intervalo controla uma faxina que
+# roda sozinha em segundo plano (ver main.py), bem menor que o TTL pra
+# garantir que a memória nunca fique presa por muito mais tempo que o TTL
+# real, mesmo sem nenhum tráfego.
+SESSION_CLEANUP_INTERVAL_SECONDS = int(os.getenv("DOCKSMITH_SESSION_CLEANUP_INTERVAL_SECONDS", "300"))
+
 # Bypass só para desenvolvimento local (QA do frontend sem token real do
 # Hub). Nunca deve ser "true" em produção — não existe na Vercel/Railway.
 DEV_BYPASS_AUTH = os.getenv("DOCKSMITH_API_DEV_BYPASS_AUTH", "false").lower() == "true"

@@ -36,3 +36,46 @@ def test_expired_session_is_cleaned_up():
     with sessions._lock:
         sessions._sessions[sid]["last_seen"] -= 10**9  # bem além do TTL
     assert sessions.get_session(sid, "user-y") is None
+
+
+# ===== cleanup_expired (achado real, 2026-09-01) =====
+#
+# A limpeza só rodava de forma reativa (dentro de create_session()/
+# get_session()) — sem tráfego novo, sessões vencidas ficavam presas na
+# memória. cleanup_expired() é a mesma faxina, exposta pra ser chamada de
+# fora por uma tarefa periódica independente de tráfego (ver main.py).
+
+
+def test_cleanup_expired_removes_expired_sessions_without_any_traffic():
+    """Diferente de get_session()/create_session(), isto NUNCA deve exigir
+    que alguém "toque" numa sessão pra removê-la."""
+    sid = sessions.create_session("user-z")
+    with sessions._lock:
+        sessions._sessions[sid]["last_seen"] -= 10**9
+
+    sessions.cleanup_expired()
+
+    with sessions._lock:
+        assert sid not in sessions._sessions
+
+
+def test_cleanup_expired_keeps_sessions_still_within_ttl():
+    sid = sessions.create_session("user-fresh")
+    sessions.cleanup_expired()
+    with sessions._lock:
+        assert sid in sessions._sessions
+
+
+def test_cleanup_expired_returns_the_count_before_cleaning():
+    # _isolate_state (conftest.py) garante que o dict começa vazio aqui.
+    sid_a = sessions.create_session("user-count-a")
+    sid_b = sessions.create_session("user-count-b")
+    with sessions._lock:
+        sessions._sessions[sid_a]["last_seen"] -= 10**9
+
+    before = sessions.cleanup_expired()
+
+    assert before == 2  # sid_a + sid_b existiam antes da faxina
+    with sessions._lock:
+        assert sid_a not in sessions._sessions
+        assert sid_b in sessions._sessions

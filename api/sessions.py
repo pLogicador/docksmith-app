@@ -30,6 +30,19 @@ def _cleanup_expired_locked() -> None:
         logger.info("Sessão expirada removida: %s", session_id)
 
 
+def cleanup_expired() -> int:
+    """Mesma faxina de `_cleanup_expired_locked`, exposta pra ser chamada de
+    fora (a tarefa periódica em `main.py`) sem depender de alguém criar ou
+    acessar uma sessão pra disparar a limpeza. Devolve quantas sessões
+    existiam ANTES da faxina, só para dar visibilidade no log de quem chama
+    (nunca logamos o quê tinha dentro de cada sessão, só a contagem).
+    """
+    with _lock:
+        before = len(_sessions)
+        _cleanup_expired_locked()
+        return before
+
+
 def create_session(user_id) -> str:
     with _lock:
         _cleanup_expired_locked()
