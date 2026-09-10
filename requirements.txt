@@ -118,6 +118,14 @@ pymupdf==1.27.2 ; python_version >= "3.12" and python_version < "4.0"
 python-dateutil==2.9.0.post0 ; python_version >= "3.12" and python_version < "4.0"
 python-docx==1.2.0 ; python_version >= "3.12" and python_version < "4.0"
 python-dotenv==1.1.1 ; python_version >= "3.12" and python_version < "4.0"
+# HOTFIX (2026-09-10, produção caiu no deploy da Fase A-I): FastAPI exige
+# python-multipart pra rotas com File()/Form() -- POST /documents/upload e
+# /documents/upload/split (novas nesta mesma rodada) usam os dois. Faltava
+# nesta lista porque já estava instalada no ambiente local por outro
+# motivo (nunca listada explicitamente) -- só apareceu num install limpo
+# de verdade, como o do Railway: "RuntimeError: Form data requires
+# 'python-multipart' to be installed."
+python-multipart==0.0.20 ; python_version >= "3.12" and python_version < "4.0"
 pytz==2025.2 ; python_version >= "3.12" and python_version < "4.0"
 pyyaml==6.0.2 ; python_version >= "3.12" and python_version < "4.0"
 rank-bm25==0.2.2 ; python_version >= "3.12" and python_version < "4.0"
