@@ -17,7 +17,7 @@ export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
     number: 1,
     title: "Entrar no Docksmith",
     description:
-      "Acesse pelo Hub Syncron — sua sessão já vem autenticada por um token de curta duração, sem login separado dentro do Docksmith.",
+      "Acesse pelo Hub Syncron — você já entra logado automaticamente, sem precisar fazer login de novo dentro do Docksmith.",
     imageSrc: "/how-it-works/01-entrada.jpg",
     imageAlt: "Tela inicial do Docksmith logo após o acesso, mostrando o formulário de nova extração",
   },
@@ -35,7 +35,7 @@ export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
     number: 3,
     title: "Iniciar uma extração",
     description:
-      "Informe a URL de um site técnico, dê um nome à coleção e escolha o alcance do rastreamento — o Docksmith raspa e indexa o conteúdo em memória.",
+      "Informe a URL de um site técnico, dê um nome à coleção e escolha quanto o Docksmith deve explorar — ele lê e organiza tudo automaticamente.",
     imageSrc: "/how-it-works/03-extracao.jpg",
     imageAlt: "Formulário de nova extração preenchido com uma URL e nome de coleção",
   },
@@ -44,7 +44,7 @@ export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
     number: 4,
     title: "Acompanhar o processamento",
     description:
-      "O conteúdo extraído é dividido em trechos, indexado com embeddings locais e fica pronto para perguntas — sem nada salvo em disco.",
+      "O Docksmith organiza tudo automaticamente e deixa pronto para você perguntar — nada fica salvo depois que a sessão termina.",
     imageSrc: "/how-it-works/04-processamento.jpg",
     imageAlt: "Indicador de carregamento durante o processamento da extração",
   },
@@ -71,7 +71,7 @@ export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
     number: 7,
     title: "Conferir evidências e fontes",
     description:
-      "Cada resposta é rastreável até os trechos originais da documentação extraída — nada é inventado além do que está nas fontes.",
+      "Cada resposta mostra exatamente de onde veio a informação — nada é inventado além do que está no material original.",
     imageSrc: "/how-it-works/07-evidencias.jpg",
     imageAlt: "Aba de evidências mostrando trechos-fonte expansíveis",
   },

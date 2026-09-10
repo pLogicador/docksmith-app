@@ -90,7 +90,7 @@ export function ResultPanel({ message, onOpenChange, question, collectionDocumen
                         className="rounded-lg border border-border bg-surface-2 px-3"
                       >
                         <AccordionTrigger className="text-[10px] font-semibold uppercase tracking-wide text-text-tertiary">
-                          Trecho {s.index + 1}
+                          {s.source_label ? s.source_label : `Trecho ${s.index + 1}`}
                         </AccordionTrigger>
                         <AccordionContent className="break-words text-xs leading-relaxed text-text-secondary">
                           {s.excerpt}
@@ -107,19 +107,19 @@ export function ResultPanel({ message, onOpenChange, question, collectionDocumen
                 <dl className="grid grid-cols-2 gap-3">
                   <div className="rounded-lg border border-border bg-surface-2 p-3">
                     <dt className="text-[11px] text-text-tertiary">Documentos na coleção</dt>
-                    <dd className="mt-1 text-lg font-semibold text-text-primary">{collectionDocumentCount}</dd>
+                    <dd className="font-display mt-1 text-lg font-semibold tabular-nums text-text-primary">{collectionDocumentCount}</dd>
                   </div>
                   <div className="rounded-lg border border-border bg-surface-2 p-3">
                     <dt className="text-[11px] text-text-tertiary">Trechos usados na resposta</dt>
-                    <dd className="mt-1 text-lg font-semibold text-text-primary">{sources.length}</dd>
+                    <dd className="font-display mt-1 text-lg font-semibold tabular-nums text-text-primary">{sources.length}</dd>
                   </div>
                   <div className="rounded-lg border border-border bg-surface-2 p-3">
                     <dt className="text-[11px] text-text-tertiary">Profundidade</dt>
-                    <dd className="mt-1 text-lg font-semibold text-text-primary">{DEPTH_LABEL[depth] ?? depth}</dd>
+                    <dd className="font-display mt-1 text-lg font-semibold tabular-nums text-text-primary">{DEPTH_LABEL[depth] ?? depth}</dd>
                   </div>
                   <div className="rounded-lg border border-border bg-surface-2 p-3">
                     <dt className="text-[11px] text-text-tertiary">Caracteres na resposta</dt>
-                    <dd className="mt-1 text-lg font-semibold text-text-primary">{message.content.length}</dd>
+                    <dd className="font-display mt-1 text-lg font-semibold tabular-nums text-text-primary">{message.content.length}</dd>
                   </div>
                 </dl>
               </TabsContent>
@@ -132,8 +132,8 @@ export function ResultPanel({ message, onOpenChange, question, collectionDocumen
                     <Badge variant="neutral">{new Date(message.timestamp).toLocaleString("pt-BR")}</Badge>
                   </div>
                   <p className="text-xs leading-relaxed text-text-tertiary">
-                    A resposta foi gerada por busca vetorial (FAISS + embeddings locais) sobre a coleção, seguida de
-                    geração de texto pelo modelo de IA selecionado, usando apenas os trechos recuperados como contexto.
+                    O Docksmith primeiro encontrou os trechos mais relevantes da coleção pra essa pergunta, e só
+                    depois pediu ao modelo de IA selecionado pra escrever a resposta usando apenas esses trechos.
                   </p>
                 </div>
               </TabsContent>

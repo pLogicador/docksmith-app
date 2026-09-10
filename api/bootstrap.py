@@ -15,5 +15,20 @@ if str(DOCKSMITH_DIR) not in sys.path:
 
 from service.scraping import ScrapingService  # noqa: E402
 from service.rag import RAGService, build_chat_llm, DEFAULT_MODELS  # noqa: E402
+from service.document_loader import (  # noqa: E402
+    load_document,
+    split_document_into_parts,
+    UnsupportedDocumentError,
+    PageLimitExceededError,
+)
 
-__all__ = ["ScrapingService", "RAGService", "build_chat_llm", "DEFAULT_MODELS"]
+__all__ = [
+    "ScrapingService",
+    "RAGService",
+    "build_chat_llm",
+    "DEFAULT_MODELS",
+    "load_document",
+    "split_document_into_parts",
+    "UnsupportedDocumentError",
+    "PageLimitExceededError",
+]

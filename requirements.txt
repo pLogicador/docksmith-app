@@ -9,6 +9,13 @@ anyio==4.9.0 ; python_version >= "3.12" and python_version < "4.0"
 attrs==25.3.0 ; python_version >= "3.12" and python_version < "4.0"
 beautifulsoup4==4.14.2 ; python_version >= "3.12" and python_version < "4.0"
 blinker==1.9.0 ; python_version >= "3.12" and python_version < "4.0"
+# 4ª rodada (2026-09-02, prompt-mestre "Docksmith" -- "documentos ainda
+# somem a cada reinício do servidor"): cliente S3-compatível pra falar
+# com Cloudflare R2 -- ver api/r2_storage.py. R2 expõe a mesma API da AWS,
+# então boto3 (o cliente oficial da AWS) funciona sem nenhuma biblioteca
+# específica de R2.
+boto3==1.43.87 ; python_version >= "3.12" and python_version < "4.0"
+botocore==1.43.87 ; python_version >= "3.12" and python_version < "4.0"
 cachetools==6.1.0 ; python_version >= "3.12" and python_version < "4.0"
 certifi==2025.6.15 ; python_version >= "3.12" and python_version < "4.0"
 cffi==1.17.1 ; python_version >= "3.12" and python_version < "4.0"
@@ -47,6 +54,7 @@ huggingface-hub==0.33.2 ; python_version >= "3.12" and python_version < "4.0"
 idna==3.10 ; python_version >= "3.12" and python_version < "4.0"
 jinja2==3.1.6 ; python_version >= "3.12" and python_version < "4.0"
 jiter==0.16.0 ; python_version >= "3.12" and python_version < "4.0"
+jmespath==1.1.0 ; python_version >= "3.12" and python_version < "4.0"
 joblib==1.5.1 ; python_version >= "3.12" and python_version < "4.0"
 jsonpatch==1.33 ; python_version >= "3.12" and python_version < "4.0"
 jsonpointer==3.0.0 ; python_version >= "3.12" and python_version < "4.0"
@@ -102,15 +110,23 @@ pydantic-core==2.33.2 ; python_version >= "3.12" and python_version < "4.0"
 pydantic-settings==2.10.1 ; python_version >= "3.12" and python_version < "4.0"
 pydantic==2.11.7 ; python_version >= "3.12" and python_version < "4.0"
 pydeck==0.9.1 ; python_version >= "3.12" and python_version < "4.0"
+# Fase I, 2ª rodada (2026-09-02, prompt-mestre "Docksmith" §8/§10): ingestão
+# de PDF/DOCX -- ver docksmith/service/document_loader.py. PyMuPDF (fitz)
+# extrai texto real por página (sem depender de LLM, §8: "Não utilizar LLM
+# para extrair texto"); python-docx extrai parágrafos/headings/tabelas.
+pymupdf==1.27.2 ; python_version >= "3.12" and python_version < "4.0"
 python-dateutil==2.9.0.post0 ; python_version >= "3.12" and python_version < "4.0"
+python-docx==1.2.0 ; python_version >= "3.12" and python_version < "4.0"
 python-dotenv==1.1.1 ; python_version >= "3.12" and python_version < "4.0"
 pytz==2025.2 ; python_version >= "3.12" and python_version < "4.0"
 pyyaml==6.0.2 ; python_version >= "3.12" and python_version < "4.0"
+rank-bm25==0.2.2 ; python_version >= "3.12" and python_version < "4.0"
 referencing==0.36.2 ; python_version >= "3.12" and python_version < "4.0"
 regex==2024.11.6 ; python_version >= "3.12" and python_version < "4.0"
 requests-toolbelt==1.0.0 ; python_version >= "3.12" and python_version < "4.0"
 requests==2.32.5 ; python_version >= "3.12" and python_version < "4.0"
 rpds-py==0.26.0 ; python_version >= "3.12" and python_version < "4.0"
+s3transfer==0.19.2 ; python_version >= "3.12" and python_version < "4.0"
 safetensors==0.5.3 ; python_version >= "3.12" and python_version < "4.0"
 scikit-learn==1.7.0 ; python_version >= "3.12" and python_version < "4.0"
 scipy==1.16.0 ; python_version >= "3.12" and python_version < "4.0"

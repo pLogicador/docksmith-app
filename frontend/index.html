@@ -7,6 +7,18 @@
     <meta name="theme-color" content="#0a0d11" />
     <meta name="description" content="Docksmith — extração de conhecimento técnico e chat com documentação, do jeito inteligente." />
     <title>Docksmith</title>
+    <!--
+      --font-sans/--font-mono citavam "Inter"/"JetBrains Mono" desde
+      sempre (index.css) sem nenhum <link> correspondente -- caía em
+      ui-sans-serif/system-ui o tempo todo. Corrigido junto com a adição
+      de IBM Plex Sans (--font-display, headings/números-chave).
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="root"></div>

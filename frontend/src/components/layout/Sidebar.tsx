@@ -12,7 +12,7 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       <div className="flex items-center gap-2.5 px-4 py-5">
         <Symbol size={26} />
         <div>
-          <p className="text-sm font-semibold leading-none text-text-primary">Docksmith</p>
+          <p className="font-display text-sm font-semibold leading-none text-text-primary">Docksmith</p>
           <p className="mt-1 text-[11px] leading-none text-text-tertiary">Extração de conhecimento</p>
         </div>
       </div>

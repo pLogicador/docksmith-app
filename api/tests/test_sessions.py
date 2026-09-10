@@ -79,3 +79,66 @@ def test_cleanup_expired_returns_the_count_before_cleaning():
     with sessions._lock:
         assert sid_a not in sessions._sessions
         assert sid_b in sessions._sessions
+
+
+# ===== cleanup_expired_with_details / restore_session (2026-09-02, 4ª
+# rodada) -- suporte pra faxina/restauração de objetos R2, ver
+# api/r2_storage.py e api/main.py._session_cleanup_loop. =====
+
+
+def test_cleanup_expired_with_details_reports_session_id_and_user_id():
+    sid = sessions.create_session("user-r2")
+    with sessions._lock:
+        sessions._sessions[sid]["last_seen"] -= 10**9
+
+    before, removed = sessions.cleanup_expired_with_details()
+
+    assert before == 1
+    assert removed == [{"session_id": sid, "user_id": "user-r2"}]
+
+
+def test_cleanup_expired_with_details_reports_nothing_when_no_session_expired():
+    sessions.create_session("user-fresh-2")
+    before, removed = sessions.cleanup_expired_with_details()
+    assert before == 1
+    assert removed == []
+
+
+def test_cleanup_expired_int_contract_is_unaffected_by_the_new_details_function():
+    """`cleanup_expired()` (contrato antigo, `-> int`) continua se
+    comportando exatamente como antes -- a função nova é aditiva, não uma
+    substituição."""
+    sid = sessions.create_session("user-old-contract")
+    with sessions._lock:
+        sessions._sessions[sid]["last_seen"] -= 10**9
+    before = sessions.cleanup_expired()
+    assert isinstance(before, int)
+    assert before == 1
+
+
+def test_restore_session_recreates_under_the_exact_same_session_id():
+    """Diferente de create_session (que sempre gera um id novo),
+    restore_session usa o id que o cliente já tinha -- essencial pra ele
+    continuar funcionando sem saber que, por trás, a sessão em memória
+    tinha sumido e foi reconstruída a partir do R2."""
+    fake_session_id = "id-que-o-cliente-ja-tinha"
+    assert sessions.get_session(fake_session_id, "user-1") is None  # não existe ainda
+
+    sessions.restore_session(
+        fake_session_id,
+        "user-1",
+        collections={"manual": ["texto restaurado"]},
+        collection_labels={"manual": ["manual.pdf - página 1"]},
+        collection_structure={"manual": [{"chapter": None, "section": None, "page_start": 1, "page_end": 1}]},
+    )
+
+    restored = sessions.get_session(fake_session_id, "user-1")
+    assert restored is not None
+    assert restored["collections"]["manual"] == ["texto restaurado"]
+    assert restored["loaded_indices"] == {}  # precisa ser reindexado, não veio pronto
+
+
+def test_restore_session_is_only_visible_to_the_original_owner():
+    sessions.restore_session("sid-restaurado", "dono-real", collections={"c": ["x"]})
+    assert sessions.get_session("sid-restaurado", "outra-pessoa") is None
+    assert sessions.get_session("sid-restaurado", "dono-real") is not None

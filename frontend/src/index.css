@@ -12,6 +12,14 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  /* Face de destaque pra headings/números-chave -- precisa/estruturada,
+     coerente com o conceito "portão + camadas" e a paleta fria aço/teal;
+     distinta de Inter (corpo/UI) e das faces já usadas por outros
+     produtos do ecossistema (Space Grotesk no Hub, Sora no ANZ Finance,
+     Unbounded no Live Scheduler). Carregada junto de Inter/JetBrains Mono
+     em index.html -- nenhuma das duas era de fato carregada antes, só
+     citada aqui, caindo em ui-sans-serif/system-ui o tempo todo. */
+  --font-display: "IBM Plex Sans", var(--font-sans);
 
   --color-bg: var(--bg);
   --color-surface: var(--surface);

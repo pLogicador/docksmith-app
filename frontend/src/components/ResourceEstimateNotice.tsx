@@ -68,15 +68,12 @@ export function ResourceEstimateNotice({
       </div>
 
       <div className="mt-3 rounded-lg border border-border/60 bg-surface/60 p-3 text-xs text-text-secondary">
-        <p className="mb-1.5 font-medium text-text-primary">Estimativa de recursos</p>
+        <p className="mb-1.5 font-medium text-text-primary">Sobre este conteúdo</p>
         <ul className="space-y-0.5">
           <li>{formatNumber(estimate.document_count)} documento(s)</li>
           <li>~{formatMb(estimate.total_mb)} de conteúdo</li>
-          <li>~{formatNumber(estimate.estimated_chunks)} trechos estimados</li>
-          <li>Consumo estimado durante preparação: ~{formatMb(estimate.estimated_indexing_mb)}</li>
-          <li>Memória disponível: ~{formatMb(estimate.available_memory_mb)}</li>
           <li>
-            Status: <span className={cn("font-medium", tone.text)}>{STATUS_LABEL[estimate.status]}</span>
+            Situação: <span className={cn("font-medium", tone.text)}>{STATUS_LABEL[estimate.status]}</span>
           </li>
         </ul>
       </div>

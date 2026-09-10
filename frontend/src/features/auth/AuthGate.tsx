@@ -88,7 +88,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-bg px-6 text-center text-text-primary">
         <Symbol size={48} />
         <div className="max-w-sm space-y-2">
-          <h1 className="text-lg font-semibold">
+          <h1 className="font-display text-lg font-semibold">
             {status === "expired" ? "Sessão expirada" : "Faça login pelo Hub"}
           </h1>
           <p className="text-sm text-text-secondary">

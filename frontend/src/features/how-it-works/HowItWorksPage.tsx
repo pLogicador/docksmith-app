@@ -9,7 +9,7 @@ export function HowItWorksPage() {
       <header className="flex flex-col items-start gap-3">
         <Symbol size={36} />
         <div>
-          <h1 className="text-xl font-semibold text-text-primary sm:text-2xl">Como funciona</h1>
+          <h1 className="font-display text-xl font-semibold text-text-primary sm:text-2xl">Como funciona</h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-text-secondary sm:text-base">
             Do link até a resposta: veja o caminho completo de uma extração no Docksmith, passo a passo.
           </p>
@@ -28,7 +28,7 @@ export function HowItWorksPage() {
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-temper/10 text-xs font-semibold text-temper-strong">
                   {step.number}
                 </span>
-                <h2 className="text-lg font-semibold text-text-primary sm:text-xl">{step.title}</h2>
+                <h2 className="font-display text-lg font-semibold text-text-primary sm:text-xl">{step.title}</h2>
                 <p className="max-w-[52ch] text-sm leading-relaxed text-text-secondary">{step.description}</p>
               </div>
               <ScreenshotFrame src={step.imageSrc} alt={step.imageAlt} priority={i === 0} />

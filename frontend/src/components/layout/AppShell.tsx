@@ -34,7 +34,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           <div className="flex items-center gap-2 lg:hidden">
             <Symbol size={20} />
-            <span className="text-sm font-semibold">Docksmith</span>
+            <span className="font-display text-sm font-semibold">Docksmith</span>
           </div>
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">

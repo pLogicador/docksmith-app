@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useMutation } from "@tanstack/react-query"
-import { ArrowLeft, Download, SendHorizonal, Trash2 } from "lucide-react"
+import { ArrowLeft, Download, Layers, SendHorizonal, Trash2 } from "lucide-react"
 import { askQuestion, ApiError } from "@/lib/api"
 import { useStore } from "@/lib/store"
 import type { ChatBlockedDetail } from "@/lib/types"
@@ -18,6 +18,10 @@ function isChatBlockedDetail(detail: unknown): detail is ChatBlockedDetail {
 }
 
 const SWIPE_DISTANCE_THRESHOLD = 60
+// Fase H (2026-09-10): teto de multicontexto -- a coleção atual + até 2
+// outras, nunca mais que 3 no total (mesmo teto validado no backend,
+// ChatRequest.collection_names via Field(max_length=3)).
+const MAX_COMBINED_COLLECTIONS = 3
 
 // Ignora o gesto se ele começar dentro de algo com scroll horizontal próprio
 // (blocos de código / tabelas do markdown) — senão rolar um bloco de código
@@ -43,12 +47,26 @@ export function ChatPage() {
   const [analysisMessageId, setAnalysisMessageId] = useState<string | null>(null)
   const [swipeDirection, setSwipeDirection] = useState<"prev" | "next" | null>(null)
   const [blocked, setBlocked] = useState<{ question: string; detail: ChatBlockedDetail } | null>(null)
+  // Fase E (2026-09-10): o cache LRU por sessão pode evictar uma coleção
+  // entre uma pergunta e outra -- a próxima pergunta reindexa por trás,
+  // sem erro nenhum, só demora mais que o normal. Como o frontend só sabe
+  // `was_cached` DEPOIS que a resposta chega (tarde demais pra escolher o
+  // texto certo desde o início), a transparência aqui é baseada em tempo
+  // real de espera: se "Pensando…" já está demorando mais que o normal de
+  // uma pergunta já indexada, troca pra um texto que explica o motivo
+  // provável, em vez de deixar o usuário sem nenhuma pista.
+  const [isTakingLong, setIsTakingLong] = useState(false)
+  // Fase H (2026-09-10, multicontexto): nomes de OUTRAS coleções (nunca a
+  // atual, que já entra implícita) selecionadas pra combinar na próxima
+  // pergunta -- capado em MAX_COMBINED_COLLECTIONS - 1 (a atual conta 1).
+  const [combineWith, setCombineWith] = useState<string[]>([])
   const scrollRef = useRef<HTMLDivElement>(null)
   const touchStartRef = useRef<{ x: number; y: number; skip: boolean } | null>(null)
 
   const collection = state.collections.find((c) => c.name === decodedName)
   const messages = state.messagesByCollection[decodedName] ?? []
   const collectionIndex = state.collections.findIndex((c) => c.name === decodedName)
+  const otherCollections = state.collections.filter((c) => c.name !== decodedName)
 
   function handleTouchStart(e: React.TouchEvent) {
     const touch = e.touches[0]
@@ -89,18 +107,46 @@ export function ChatPage() {
         api_key: state.modelConfig.apiKey,
         depth: state.depth,
         confirm_large_collection: confirm,
+        // Fase H: só manda `collection_names` quando o usuário de fato
+        // combinou com outra(s) coleção(ões) -- ausente/undefined preserva
+        // o modo de sempre (JSON.stringify descarta a chave).
+        collection_names: combineWith.length > 0 ? [decodedName, ...combineWith] : undefined,
       }),
   })
+
+  function toggleCombineWith(name: string) {
+    setCombineWith((prev) => {
+      if (prev.includes(name)) return prev.filter((n) => n !== name)
+      if (prev.length >= MAX_COMBINED_COLLECTIONS - 1) return prev  // já no teto (atual + 2 outras)
+      return [...prev, name]
+    })
+  }
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" })
   }, [messages, askMutation.isPending])
 
   useEffect(() => {
+    if (!askMutation.isPending) {
+      setIsTakingLong(false)
+      return
+    }
+    const timeout = setTimeout(() => setIsTakingLong(true), 4000)
+    return () => clearTimeout(timeout)
+  }, [askMutation.isPending])
+
+  useEffect(() => {
     if (!swipeDirection) return
     const timeout = setTimeout(() => setSwipeDirection(null), 220)
     return () => clearTimeout(timeout)
   }, [swipeDirection, decodedName])
+
+  // Fase H: trocar de coleção (navegação/swipe) zera a combinação --
+  // "combinar com X" só faz sentido enquanto o usuário está olhando pra
+  // coleção que escolheu como base.
+  useEffect(() => {
+    setCombineWith([])
+  }, [decodedName])
 
   if (!collection || !state.sessionId) {
     return (
@@ -197,7 +243,7 @@ export function ChatPage() {
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-text-primary">{decodedName}</p>
-            <p className="text-xs text-text-tertiary">{collection.documentCount} documento(s) indexado(s)</p>
+            <p className="text-xs text-text-tertiary">{collection.documentCount} documento(s) prontos para perguntas</p>
           </div>
           <div className="flex shrink-0 gap-1.5">
             <Button variant="ghost" size="icon" onClick={handleDownload} disabled={!messages.length} aria-label="Baixar histórico">
@@ -262,7 +308,7 @@ export function ChatPage() {
             ))}
             {askMutation.isPending && (
               <div className="flex items-center gap-2 text-xs text-text-tertiary">
-                <Spinner size={13} /> Pensando…
+                <Spinner size={13} /> {isTakingLong ? "Preparando novamente este contexto…" : "Pensando…"}
               </div>
             )}
           </div>
@@ -291,6 +337,35 @@ export function ChatPage() {
       )}
 
       <div className="shrink-0 border-t border-border p-3 sm:p-4">
+        {/* Fase H (2026-09-10, multicontexto): combinar a coleção atual com
+            até 2 outras numa pergunta só -- só aparece quando existe pelo
+            menos 1 outra coleção nesta sessão pra combinar. */}
+        {otherCollections.length > 0 && (
+          <div className="mx-auto mb-2 flex max-w-2xl flex-wrap items-center gap-1.5">
+            <Layers size={12} className="shrink-0 text-text-tertiary" />
+            <span className="text-[11px] text-text-tertiary">Combinar com:</span>
+            {otherCollections.map((c) => {
+              const active = combineWith.includes(c.name)
+              const disabled = !active && combineWith.length >= MAX_COMBINED_COLLECTIONS - 1
+              return (
+                <button
+                  key={c.name}
+                  type="button"
+                  onClick={() => toggleCombineWith(c.name)}
+                  disabled={disabled}
+                  title={disabled ? `Máximo de ${MAX_COMBINED_COLLECTIONS} coleções combinadas` : undefined}
+                  className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                    active
+                      ? "border-temper bg-temper/10 text-temper-strong"
+                      : "border-border text-text-secondary hover:bg-surface-2"
+                  }`}
+                >
+                  {c.name}
+                </button>
+              )
+            })}
+          </div>
+        )}
         <div className="mx-auto flex max-w-2xl items-end gap-2">
           <Textarea
             rows={1}
