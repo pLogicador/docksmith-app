@@ -6,6 +6,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/Drawer"
 import { Button } from "@/components/ui/Button"
 import { useAuthUser } from "@/features/auth/AuthGate"
 import { SettingsPanel } from "@/features/settings/SettingsPanel"
+import { HUB_URL } from "@/lib/env"
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user } = useAuthUser()
@@ -57,7 +58,70 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="min-w-0 flex-1 overflow-y-auto scrollbar-thin">{children}</main>
+        <main className="min-w-0 flex-1 overflow-y-auto scrollbar-thin">
+          {children}
+
+          {/* Rodapé padronizado com o Hub (mesma estrutura/lógica de
+              navegação já aplicada no Live Scheduler, FlexiPage, AgenteOS e
+              ANZ Finance). Vive DENTRO de <main>, depois de {children}, e
+              não como uma barra fixa do shell: este layout é
+              h-screen/overflow-hidden com <main> como única área rolável,
+              então um rodapé fixo comeria espaço útil de tela em toda
+              conversa/documento. Aqui ele só aparece ao rolar até o fim do
+              conteúdo real, como qualquer rodapé de página normal. */}
+          <footer className="border-t border-border">
+            <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6 md:flex-row md:justify-between">
+              <div className="max-w-xs">
+                <div className="flex items-center gap-2">
+                  <Symbol size={20} />
+                  <span className="text-sm font-semibold text-text-primary">Docksmith</span>
+                </div>
+                <p className="mt-2 text-xs text-text-secondary">
+                  Converse com seus documentos — parte do ecossistema Syncron.
+                </p>
+              </div>
+
+              <div className="flex gap-10 text-xs">
+                <div className="flex flex-col gap-2">
+                  <span className="font-semibold uppercase tracking-wide text-text-secondary">Ecossistema</span>
+                  <a
+                    href={`${HUB_URL}/`}
+                    className="text-text-secondary transition-colors hover:text-text-primary"
+                  >
+                    Acessar o Hub
+                  </a>
+                  <a
+                    href={`${HUB_URL}/app/services/`}
+                    className="text-text-secondary transition-colors hover:text-text-primary"
+                  >
+                    Minhas ferramentas
+                  </a>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <span className="font-semibold uppercase tracking-wide text-text-secondary">Suporte</span>
+                  <a
+                    href="mailto:pedrologicador@gmail.com"
+                    className="text-text-secondary transition-colors hover:text-text-primary"
+                  >
+                    Falar com suporte
+                  </a>
+                  <a
+                    href={`${HUB_URL}/legal/privacy/`}
+                    className="text-text-secondary transition-colors hover:text-text-primary"
+                  >
+                    Privacidade
+                  </a>
+                  <a
+                    href={`${HUB_URL}/legal/terms/`}
+                    className="text-text-secondary transition-colors hover:text-text-primary"
+                  >
+                    Termos de Uso
+                  </a>
+                </div>
+              </div>
+            </div>
+          </footer>
+        </main>
       </div>
     </div>
   )
