@@ -117,6 +117,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                   >
                     Termos de Uso
                   </a>
+                  <a
+                    href={`${HUB_URL}/legal/cookies/`}
+                    className="text-text-secondary transition-colors hover:text-text-primary"
+                  >
+                    Cookies
+                  </a>
                 </div>
               </div>
             </div>
