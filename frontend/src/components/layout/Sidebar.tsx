@@ -86,7 +86,7 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="border-t border-border px-4 py-3">
         <p className="text-[11px] text-text-tertiary">
-          Coleções ficam apenas na memória desta sessão — nada é salvo em disco.
+          Coleções ficam apenas na memória desta sessão: nada é salvo em disco.
         </p>
       </div>
     </div>

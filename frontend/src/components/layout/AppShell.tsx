@@ -77,7 +77,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <span className="text-sm font-semibold text-text-primary">Docksmith</span>
                 </div>
                 <p className="mt-2 text-xs text-text-secondary">
-                  Converse com seus documentos — parte do ecossistema Syncron.
+                  Converse com seus documentos, parte do ecossistema Syncron.
                 </p>
               </div>
 
@@ -88,7 +88,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                     href={`${HUB_URL}/`}
                     className="text-text-secondary transition-colors hover:text-text-primary"
                   >
-                    Acessar o Hub
+                    Acessar o Syncron
                   </a>
                   <a
                     href={`${HUB_URL}/app/services/`}

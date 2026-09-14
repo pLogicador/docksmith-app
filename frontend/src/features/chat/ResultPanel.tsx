@@ -61,7 +61,7 @@ export function ResultPanel({ message, onOpenChange, question, collectionDocumen
               <TabsContent value="resumo">
                 <Markdown content={summary} className="text-sm text-text-primary" />
                 <p className="mt-3 text-xs text-text-tertiary">
-                  Conclusão — a essência da resposta, extraída do início dela. Veja a fundamentação completa no chat.
+                  Conclusão: a essência da resposta, extraída do início dela. Veja a fundamentação completa no chat.
                 </p>
               </TabsContent>
 

@@ -193,7 +193,7 @@ export function WorkspacePage() {
           <h1 className="font-display text-xl font-semibold text-text-primary sm:text-2xl">Nova extração</h1>
           <p className="mt-1 text-sm text-text-secondary">
             Informe um site técnico ou envie um PDF/DOCX. O Docksmith extrai o conteúdo e monta uma coleção
-            consultável por chat — tudo na memória desta sessão, nada é salvo em disco.
+            consultável por chat: tudo na memória desta sessão, nada é salvo em disco.
           </p>
         </div>
       </div>
@@ -354,8 +354,8 @@ export function WorkspacePage() {
                       {pageLimitBlocked.max_pages} por envio.
                     </p>
                     <p className="text-text-tertiary">
-                      Podemos processar só as primeiras {pageLimitBlocked.max_pages} {pageLimitBlocked.unit} — o
-                      restante fica de fora — ou dividir o documento inteiro em várias coleções, cada uma dentro
+                      Podemos processar só as primeiras {pageLimitBlocked.max_pages} {pageLimitBlocked.unit}
+                      (o restante fica de fora), ou dividir o documento inteiro em várias coleções, cada uma dentro
                       do limite, sem perder nenhum conteúdo.
                     </p>
                     <div className="flex flex-wrap items-center gap-2 pt-0.5">
